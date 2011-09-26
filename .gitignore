@@ -14,3 +14,5 @@
 /project/target/
 /src/main/scala/bootstrap/liftweb/CloudBeesLiftFilter.scala
 src/main/webapp/WEB-INF/cloudbees-web.xml
+.idea/
+*.iml

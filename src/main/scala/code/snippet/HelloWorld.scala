@@ -1,5 +1,5 @@
-package code 
-package snippet 
+package code
+package snippet
 
 import scala.xml.{NodeSeq, Text}
 import net.liftweb.util._
