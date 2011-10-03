@@ -74,12 +74,11 @@ class Boot extends Loggable {
   def siteMap = {
     // Build SiteMap
     def sitemap = SiteMap(
-      Menu.i("Home") / "index" >> User.AddUserMenusAfter, // the simple way to declare a menu
-
-      // more complex because this menu allows anything in the
-      // /static path to be visible
-      Menu(Loc("Static", Link(List("static"), true, "/static/index"),
-        "Static Content")))
+      Menu.i("Home") / "index" >> User.AddUserMenusAfter,
+      Menu.i("Events") / "events"  submenus (
+        Menu.i("List") / "events" / "list"
+      )
+    )
 
     def sitemapMutators = User.sitemapMutator
 
