@@ -2,16 +2,13 @@ package bootstrap.liftweb
 
 import net.liftweb._
 import util._
-import Props._
-import Helpers._
 import common._
 import http._
 import sitemap._
-import Loc._
-import mapper._
 import code.model._
 import javax.mail.internet.MimeMessage
 import javax.mail.internet.MimeMultipart
+import code.db.EventsifyDB
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -22,7 +19,7 @@ class Boot extends Loggable {
     // where to search snippet
     LiftRules.addToPackages("code")
 
-    db
+    EventsifyDB.setup
 
     siteMap
     
@@ -47,37 +44,13 @@ class Boot extends Loggable {
     
   }
 
-  def db = {
-    DefaultConnectionIdentifier.jndiName = "jdbc/JNDI_NAME"
-
-    if (!DB.jndiJdbcConnAvailable_?) {
-
-      val vendor = Props.mode match {
-        case RunModes.Test => new StandardDBVendor("org.h2.Driver", "jdbc:h2:mem:lift;DB_CLOSE_DELAY=-1", Empty, Empty)
-        case otherwise => new StandardDBVendor(Props.get("db.driver") openOr "org.h2.Driver", Props.get("db.url") openOr "jdbc:h2:lift_proto.db;AUTO_SERVER=TRUE", Props.get("db.user"), Props.get("db.password"))
-      }
-
-      LiftRules.unloadHooks.append(vendor.closeAllConnections_! _)
-
-      DB.defineConnectionManager(DefaultConnectionIdentifier, vendor)
-    }
-
-    Schemifier.schemify(true, Schemifier.infoF _, User)
-
-    // Make a transaction span the whole HTTP request
-    S.addAround(DB.buildLoanWrapper)
-
-    // What is the function to test if a user is logged in?
-    LiftRules.loggedInTest = Full(() => User.loggedIn_?)
-  }
-
   def siteMap = {
     // Build SiteMap
     def sitemap = SiteMap(
       Menu.i("Home") / "index" >> User.AddUserMenusAfter,
       Menu.i("Events") / "events"  submenus (
-        Menu.i("List") / "events" / "list"
-      )
+        Menu.i("List") / "events" / "list",
+        Menu.i("Create") / "events" / "create")
     )
 
     def sitemapMutators = User.sitemapMutator
