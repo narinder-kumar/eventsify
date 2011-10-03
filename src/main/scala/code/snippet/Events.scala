@@ -10,7 +10,7 @@ class Events extends StatefulSnippet {
   }
 
   def create(xhtml: NodeSeq): NodeSeq = {
-    return xhtml
+    xhtml
   }
 
 }
